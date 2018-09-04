@@ -1,17 +1,11 @@
 {
-  "name": "cordova-plugin-localization-strings",
+  "name": "fairmanager-cordova-plugin-localization-strings",
   "version": "2.0.0",
   "description": "Cordova Plugin for handling localization strings on InfoPlist.strings and Localizable.strings on iOS, strings.xml on Android",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kelvinhokk/cordova-plugin-localization-strings.git"
+    "url": "https://github.com/fairmanager-cordova/plugin-localization-strings.git"
   },
-  "engines": [
-    {
-      "name": "cordova",
-      "version": ">=6.0.0"
-    }
-  ],
   "keywords": [
     "ecosystem:cordova",
     "cordova-android",
@@ -32,10 +26,16 @@
     "xml-writer": "^1.6.0",
     "xml2js": "^0.4.17"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "4.12.0",
+    "eslint-plugin-promise": "3.6.0"
+  },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kelvinhokk/cordova-plugin-localization-strings.git/issues"
+    "url": "https://github.com/fairmanager-cordova/plugin-localization-strings.git/issues"
   },
-  "homepage": "https://github.com/kelvinhokk/cordova-plugin-localization-strings.git"
+  "homepage": "https://github.com/fairmanager-cordova/plugin-localization-strings.git",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  }
 }
