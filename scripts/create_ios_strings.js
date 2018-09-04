@@ -151,7 +151,7 @@ module.exports = context => {
 					const platformPath   = path.join( context.opts.projectRoot, "platforms", "ios" );
 					const projectFileApi = require( path.join( platformPath, "/cordova/lib/projectFile.js" ) );
 					projectFileApi.purgeProjectFileCache( platformPath );
-					console.log( `${proj.filepath} purged from project cache` );
+					console.log( `${platformPath} purged from project cache` );
 
 					deferred.resolve();
 				}
