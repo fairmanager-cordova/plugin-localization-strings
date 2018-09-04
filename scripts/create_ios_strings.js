@@ -149,7 +149,13 @@ module.exports = function(context) {
                     writeLocalisationFieldsToXcodeProj(infoPlistPaths, 'InfoPlist.strings', proj);
 
                     fs.writeFileSync(getXcodePbxProjPath(), proj.writeSync());
-                    console.log('new pbx project written with localization groups');
+					console.log('new pbx project written with localization groups');
+
+					var platformPath   = path.join( context.opts.projectRoot, "platforms", "ios" );
+					var projectFileApi = require( path.join( platformPath, "/cordova/lib/projectFile.js" ) );
+					projectFileApi.purgeProjectFileCache( proj.filepath );
+					console.log( proj.filepath + " purged from project cache" );
+
                     deferred.resolve();
                 }
             });
