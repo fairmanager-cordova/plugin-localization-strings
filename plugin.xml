@@ -1,15 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        id="fairmanager-cordova-plugin-localization-strings" version="2.0.2">
-  <name>Localization</name>
-  <description>Cordova Plugin for localizing local strings</description>
-  <license>MIT License</license>
-  <keywords>cordova,internationalization,localization,i18n,l10n</keywords>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<plugin id="fairmanager-cordova-plugin-localization-strings" version="2.0.2"
+	xmlns="http://apache.org/cordova/ns/plugins/1.0">
 
-  <engines>
-    <engine name="cordova" version=">=6.0.0"/>
-  </engines>
+	<name>Localization Strings Plugin</name>
+	<description>Cordova Plugin for localizing local strings</description>
+	<license>MIT License</license>
+	<author>Oliver Salzburg</author>
+	<keywords>cordova,internationalization,localization,i18n,l10n</keywords>
 
-  <hook src="scripts/create_strings.js" type="after_prepare" />
+	<repo>https://github.com/fairmanager-cordova/plugin-localization-strings</repo>
+	<issue>https://github.com/fairmanager-cordova/plugin-localization-strings/issues</issue>
 
+	<engines>
+		<engine name="cordova" version=">=8.0.0"/>
+		<engine name="cordova-android" version=">=7.1.1"/>
+		<engine name="cordova-ios" version=">=4.5.5"/>
+	</engines>
+
+	<hook src="scripts/create_strings.js" type="after_prepare" />
 </plugin>
