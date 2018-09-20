@@ -47,7 +47,7 @@ function writeStringFile( plistStringJsonObj, lang, fileName ) {
 	fs.ensureDir( lProjPath, err => {
 		if( !err ) {
 			const stringToWrite = jsonToDotStrings( plistStringJsonObj );
-			const buffer        = iconv.encode( stringToWrite, "utf16" );
+			const buffer        = iconv.encode( stringToWrite, "utf8" );
 
 			fs.open( `${lProjPath}/${fileName}`, "w", ( innerErr, fd ) => {
 				if( innerErr ) {
@@ -146,11 +146,13 @@ module.exports = context => {
 					writeLocalisationFieldsToXcodeProj( infoPlistPaths, "InfoPlist.strings", proj );
 
 					fs.writeFileSync( getXcodePbxProjPath(), proj.writeSync() );
+					// eslint-disable-next-line no-console
 					console.log( "new pbx project written with localization groups" );
 
 					const platformPath   = path.join( context.opts.projectRoot, "platforms", "ios" );
 					const projectFileApi = require( path.join( platformPath, "/cordova/lib/projectFile.js" ) );
 					projectFileApi.purgeProjectFileCache( platformPath );
+					// eslint-disable-next-line no-console
 					console.log( `${platformPath} purged from project cache` );
 
 					deferred.resolve();
