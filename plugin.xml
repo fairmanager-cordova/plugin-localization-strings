@@ -17,5 +17,5 @@
 		<engine name="cordova-ios" version=">=4.5.5"/>
 	</engines>
 
-	<hook src="scripts/create_strings.js" type="after_prepare" />
+	<hook src="hooks/create_strings.js" type="after_prepare" />
 </plugin>
