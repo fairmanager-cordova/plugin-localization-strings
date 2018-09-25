@@ -1,7 +1,7 @@
 "use strict";
 
-const scriptIos     = require( "./create_ios_strings" );
-const scriptAndroid = require( "./create_android_strings" );
+const scriptIos     = require( "./createIosStrings" );
+const scriptAndroid = require( "./createAndroidStrings" );
 
 module.exports = context => {
 	const Q         = context.requireCordovaModule( "q" );
