@@ -4,20 +4,22 @@
 
 const _      = require( "lodash" );
 const fs     = require( "fs-extra" );
+const glob   = require( "glob" );
+const path   = require( "path" );
+const Q      = require( "q" );
 const xml2js = require( "xml2js" );
 
-function fileExists( path ) {
+const deferred = Q.defer();
+
+function fileExists( pathToFile ) {
 	try {
-		return fs.statSync( path ).isFile();
+		return fs.statSync( pathToFile ).isFile();
 	} catch( e ) {
 		return false;
 	}
 }
 
 module.exports = context => {
-	const q        = context.requireCordovaModule( "q" );
-	const deferred = q.defer();
-
 	getTargetLang( context ).then( languages => {
 		const promisesToRun = [];
 
@@ -80,7 +82,7 @@ module.exports = context => {
 		} );
 
 		// eslint-disable-next-line promise/no-nesting
-		return q.all( promisesToRun )
+		return Q.all( promisesToRun )
 			.then( () => {
 				deferred.resolve();
 				return null;
@@ -95,9 +97,6 @@ module.exports = context => {
 
 function getTargetLang( context ) {
 	const targetLangArr = [];
-	const deferred      = context.requireCordovaModule( "q" ).defer();
-	const path          = context.requireCordovaModule( "path" );
-	const glob          = context.requireCordovaModule( "glob" );
 
 	glob( "translations/app/*.json", ( err, langFiles ) => {
 		if( err ) {
@@ -121,8 +120,6 @@ function getTargetLang( context ) {
 }
 
 function getLocalizationDir( context, lang ) {
-	const path = context.requireCordovaModule( "path" );
-
 	let langDir = null;
 	switch( lang ) {
 		case "en":
@@ -136,8 +133,6 @@ function getLocalizationDir( context, lang ) {
 }
 
 function getLocalStringXmlPath( context, lang ) {
-	const path = context.requireCordovaModule( "path" );
-
 	let filePath = null;
 	switch( lang ) {
 		case "en":
@@ -151,7 +146,6 @@ function getLocalStringXmlPath( context, lang ) {
 }
 
 function getResPath( context ) {
-	const path      = context.requireCordovaModule( "path" );
 	const locations = context.requireCordovaModule( "cordova-lib/src/platforms/platforms" ).getPlatformApi( "android" ).locations;
 
 	if( locations && locations.res ) {
@@ -163,9 +157,6 @@ function getResPath( context ) {
 
 // process the modified xml and put write to file
 function processResult( context, lang, langJson, stringXmlJson ) {
-	const q        = context.requireCordovaModule( "q" );
-	const deferred = q.defer();
-
 	const mapObj = {};
 	// create a map to the actual string
 	_.forEach( stringXmlJson.resources.string, val => {

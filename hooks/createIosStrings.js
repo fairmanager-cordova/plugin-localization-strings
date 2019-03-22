@@ -4,7 +4,10 @@
 
 const fs    = require( "fs-extra" );
 const _     = require( "lodash" );
+const glob  = require( "glob" );
 const iconv = require( "iconv-lite" );
+const path  = require( "path" );
+const Q     = require( "q" );
 
 let iosProjFolder  = null;
 let iosPbxProjPath = null;
@@ -79,11 +82,11 @@ function writeLocalisationFieldsToXcodeProj( filePaths, groupname, proj ) {
 			groupKey = localizableStringVarGroup.fileRef;
 		}
 
-		filePaths.forEach( path => {
-			const results = _.find( fileRefValues, o => ( _.isObject( o ) && _.has( o, "path" ) && o.path.replace( /['"]+/g, "" ) === path ) );
+		filePaths.forEach( filePath => {
+			const results = _.find( fileRefValues, o => ( _.isObject( o ) && _.has( o, "path" ) && o.path.replace( /['"]+/g, "" ) === filePath ) );
 			if( _.isUndefined( results ) ) {
 				// not found in pbxFileReference yet
-				proj.addResourceFile( `Resources/${path}`, {
+				proj.addResourceFile( `Resources/${filePath}`, {
 					variantGroup : true
 				}, groupKey );
 			}
@@ -91,9 +94,7 @@ function writeLocalisationFieldsToXcodeProj( filePaths, groupname, proj ) {
 	}
 }
 module.exports = context => {
-	const path     = context.requireCordovaModule( "path" );
-	const q        = context.requireCordovaModule( "q" );
-	const deferred = q.defer();
+	const deferred = Q.defer();
 	const xcode    = require( "xcode" );
 
 	const localizableStringsPaths = [];
@@ -174,9 +175,8 @@ module.exports = context => {
 
 function getTargetLang( context ) {
 	const targetLangArr = [];
-	const deferred      = context.requireCordovaModule( "q" ).defer();
-	const path          = context.requireCordovaModule( "path" );
-	const glob          = context.requireCordovaModule( "glob" );
+	const deferred      = Q.defer();
+
 
 	glob( "translations/app/*.json",
 		( err, langFiles ) => {
@@ -199,4 +199,3 @@ function getTargetLang( context ) {
 	);
 	return deferred.promise;
 }
-
