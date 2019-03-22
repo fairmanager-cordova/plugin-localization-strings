@@ -4,12 +4,15 @@
 
 const scriptIos     = require( "./createIosStrings" );
 const scriptAndroid = require( "./createAndroidStrings" );
+const Q             = require( "q" );
 
-module.exports = context => {
-	const Q         = context.requireCordovaModule( "q" );
+/**
+ * @param {any} context
+ * @returns {Promise<any>}
+ */
+function createStrings( context ) {
 	const platforms = context.requireCordovaModule( "cordova-lib/src/cordova/util" ).listPlatforms( context.opts.projectRoot );
-
-	const promises = [];
+	const promises  = [];
 
 	if( platforms.indexOf( "ios" ) >= 0 ) {
 		promises.push( scriptIos( context ) );
@@ -20,4 +23,6 @@ module.exports = context => {
 	}
 
 	return Q.all( promises );
-};
+}
+
+module.exports = createStrings;
