@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<plugin id="fairmanager-cordova-plugin-localization-strings" version="2.1.5"
+<plugin id="fairmanager-cordova-plugin-localization-strings" version="2.2.0"
 	xmlns="http://apache.org/cordova/ns/plugins/1.0">
 
 	<name>Localization Strings Plugin</name>
