@@ -9,8 +9,6 @@ const path   = require( "path" );
 const Q      = require( "q" );
 const xml2js = require( "xml2js" );
 
-const deferred = Q.defer();
-
 function fileExists( pathToFile ) {
 	try {
 		return fs.statSync( pathToFile ).isFile();
@@ -20,74 +18,78 @@ function fileExists( pathToFile ) {
 }
 
 module.exports = context => {
-	getTargetLang( context ).then( languages => {
-		const promisesToRun = [];
+	const deferred = Q.defer();
 
-		languages.forEach( lang => {
-			// read the json file
-			const langJson = require( lang.path );
+	getTargetLang( context )
+		.then( languages => {
+			const promisesToRun = [];
 
-			// check the locales to write to
-			const localeLangs = [];
-			if( _.has( langJson, "locale" ) && _.has( langJson.locale, "android" ) ) {
-				// iterate the locales to to be iterated.
-				_.forEach( langJson.locale.android, aLocale => {
-					localeLangs.push( aLocale );
-				} );
-			} else {
-				// use the default lang from the filename, for example "en" in en.json
-				localeLangs.push( lang.lang );
-			}
+			languages.forEach( lang => {
+				// read the json file
+				const langJson = require( lang.path );
 
-			_.forEach( localeLangs, localeLang => {
-				const stringXmlFilePath = getLocalStringXmlPath( context, localeLang );
-				const parser            = new xml2js.Parser();
-
-				let stringXmlJson = null;
-				if( !fileExists( stringXmlFilePath ) ) {
-					stringXmlJson = {
-						resources : {
-							string : []
-						}
-					};
-					promisesToRun.push( processResult( context, localeLang, langJson, stringXmlJson ) );
-				} else {
-					// lets read from strings.xml into json
-					fs.readFile( stringXmlFilePath, {
-						encoding : "utf8"
-					}, ( err, data ) => {
-						if( err ) {
-							throw err;
-						}
-
-						parser.parseString( data, ( error, result ) => {
-							if( error ) {
-								throw error;
-							}
-
-							stringXmlJson = result;
-
-							// initialize xmlJson to have strings
-							if( !_.has( stringXmlJson, "resources" ) || !_.has( stringXmlJson.resources, "string" ) ) {
-								stringXmlJson.resources = {
-									string : []
-								};
-							}
-
-							promisesToRun.push( processResult( context, localeLang, langJson, stringXmlJson ) );
-						} );
+				// check the locales to write to
+				const localeLangs = [];
+				if( _.has( langJson, "locale" ) && _.has( langJson.locale, "android" ) ) {
+					// iterate the locales to to be iterated.
+					_.forEach( langJson.locale.android, aLocale => {
+						localeLangs.push( aLocale );
 					} );
+				} else {
+					// use the default lang from the filename, for example "en" in en.json
+					localeLangs.push( lang.lang );
 				}
-			} );
-		} );
 
-		// eslint-disable-next-line promise/no-nesting
-		return Q.all( promisesToRun )
-			.then( () => {
-				deferred.resolve();
-				return null;
+				_.forEach( localeLangs, localeLang => {
+					const stringXmlFilePath = getLocalStringXmlPath( context, localeLang );
+					const parser            = new xml2js.Parser();
+
+					let stringXmlJson = null;
+					if( !fileExists( stringXmlFilePath ) ) {
+						stringXmlJson = {
+							resources : {
+								string : []
+							}
+						};
+						promisesToRun.push( processResult( context, localeLang, langJson, stringXmlJson ) );
+					} else {
+						// lets read from strings.xml into json
+						fs.readFile( stringXmlFilePath, {
+							encoding : "utf8"
+						}, ( err, data ) => {
+							if( err ) {
+								throw err;
+							}
+
+							parser.parseString( data, ( error, result ) => {
+								if( error ) {
+									throw error;
+								}
+
+								stringXmlJson = result;
+
+								// initialize xmlJson to have strings
+								if( !_.has( stringXmlJson, "resources" ) || !_.has( stringXmlJson.resources, "string" ) ) {
+									stringXmlJson.resources = {
+										string : []
+									};
+								}
+
+								promisesToRun.push( processResult( context, localeLang, langJson, stringXmlJson ) );
+							} );
+						} );
+					}
+				} );
 			} );
-	} )
+
+			// eslint-disable-next-line promise/no-nesting
+			return Q.all( promisesToRun )
+				.then( () => {
+					console.log( "Resolving deferred" );
+					deferred.resolve();
+					return null;
+				} );
+		} )
 		.catch( err => {
 			deferred.reject( err );
 		} );
@@ -96,6 +98,7 @@ module.exports = context => {
 };
 
 function getTargetLang( context ) {
+	const deferred      = Q.defer();
 	const targetLangArr = [];
 
 	glob( "translations/app/*.json", ( err, langFiles ) => {
@@ -157,7 +160,8 @@ function getResPath( context ) {
 
 // process the modified xml and put write to file
 function processResult( context, lang, langJson, stringXmlJson ) {
-	const mapObj = {};
+	const deferred = Q.defer();
+	const mapObj   = {};
 	// create a map to the actual string
 	_.forEach( stringXmlJson.resources.string, val => {
 		if( _.has( val, "$" ) && _.has( val.$, "name" ) ) {
